@@ -1,0 +1,133 @@
+# game-test
+
+Game 3D thử nghiệm làm bằng Godot 4. Bạn điều khiển một nhân vật đi dạo trong khu đất có ngôi nhà 2 tầng vào được và hai khu vườn. Camera nhìn chéo từ trên xuống. Hình hiện tại chỉ là khối cơ bản, chưa có model thật.
+
+Repo được phát triển chủ yếu bằng coding agent (Claude Code), chạy trong bộ harness `vtinter-harness`: luật, hook và subagent kiểm tra giúp agent làm đúng quy trình. Phần [Cách AI làm việc](#cách-ai-làm-việc-trong-repo) bên dưới mô tả quy trình đó.
+
+## Chạy game
+
+Cần Godot 4.5 trở lên (máy dev dùng 4.7.2).
+
+```sh
+godot --path .              # mở cửa sổ game
+godot --path . --editor     # mở Godot Editor (bấm F5 để chạy)
+godot --headless --path .   # chạy không cửa sổ, dùng cho script kiểm tra
+```
+
+Scene chính là `scenes/world.tscn`. Lần đầu mở, hoặc sau khi thêm script có `class_name` mới, nên chạy `godot --headless --path . --import` để Godot cập nhật cache class.
+
+### Điều khiển
+
+| Phím | Việc |
+|---|---|
+| WASD / phím mũi tên | Di chuyển |
+| E | Tương tác với vật gần nhất: mở/đóng cửa, bật/tắt đèn và TV, thắp/tắt hương |
+
+Góc trên bên trái hiện tên khu vực đang đứng. Khi đứng gần vật tương tác được, gợi ý `[E] ...` hiện ở dưới màn hình.
+
+### Có gì trong map
+
+- **Sân nhà**: lối đi nối nhà với vườn rau và vườn hoa.
+- **Nhà, tầng 1**: phòng khách (sofa, TV, kệ sách, đèn cây), bếp và bàn ăn, phòng ngủ, phòng tắm. Cầu thang nằm trong phòng ngủ.
+- **Nhà, tầng 2**: phòng thờ phía trước, sảnh cầu thang ở giữa, hai phòng ngủ hai bên, nhà vệ sinh phía sau.
+
+Khi bạn vào nhà, mái và nửa trên tường tầng đang đứng được ẩn đi để nhìn thấy bên trong. Đứng ở tầng 1 thì cả tầng 2 cũng ẩn. Ra sân thì nhà hiện lại đầy đủ.
+
+## Cấu trúc
+
+```
+scenes/          world (map + HUD), house, garden, player
+scripts/         logic từng scene + helper dựng hình (mesh_kit, named_area, interactable)
+docs/            tri thức của dự án, agent đọc trước khi làm (xem bảng dưới)
+.claude/         cấu hình harness cho repo (rule bị tắt, pack đang bật)
+.github/         CI chạy cùng bộ kiểm tra với hook ở máy
+AGENTS.md        mục lục cho mọi coding agent, trỏ tới docs/
+CLAUDE.md        phần riêng cho Claude Code
+ARCHITECTURE.md  domain, layer, collision layer, entry point
+```
+
+| File / thư mục trong `docs/` | Chứa gì |
+|---|---|
+| `exec-plans/active/`, `exec-plans/completed/` | Plan của việc lớn: đang làm / đã xong |
+| `PLANS.md` | Khung một plan và giao thức mỗi phiên làm việc |
+| `golden-principles.md` | Nguyên tắc bất biến, mỗi cái kèm cách kiểm |
+| `QUALITY_SCORE.md` | Điểm chất lượng từng domain |
+| `tech-debt-tracker.md` | Nợ kỹ thuật, chỗ rule và code đang lệch nhau |
+| `design-docs/`, `product-specs/`, `references/` | Quyết định thiết kế lớn (ADR), spec sản phẩm, tài liệu ngoài |
+
+## Cách AI làm việc trong repo
+
+### Nguồn tri thức
+
+Agent bắt đầu từ `AGENTS.md`. File này chỉ là mục lục: nó trỏ tới `ARCHITECTURE.md`, các file trong `docs/` và skill cần load cho từng loại việc. Có hai nguồn tri thức:
+
+- **Fact riêng của dự án** (map rộng bao nhiêu, nhà có mấy phòng, vì sao chọn cách này) nằm trong repo.
+- **Convention chung của stack** (viết GDScript có type, chọn signal hay gọi trực tiếp, test bằng GUT) nằm trong skill của plugin, ví dụ `godot-development`.
+
+Hai nguồn lệch nhau thì repo và code thật thắng.
+
+### Một việc đi qua những bước nào
+
+1. **Phân loại việc.** Việc nhỏ (1–2 file, yêu cầu rõ) thì làm luôn. Việc lớn (nhiều file, nhiều quyết định, có thể kéo qua nhiều phiên) thì viết exec plan ở `docs/exec-plans/active/<ngày>-<tên>.md` trước khi code.
+2. **Viết plan.** Plan có: acceptance criteria kiểm chứng được, các bước, quyết định kèm lý do, tiến độ, câu hỏi còn mở. Plan là bộ nhớ giữa các phiên: phiên sau, kể cả agent khác với context trống, phải làm tiếp được chỉ từ plan và `git log`.
+3. **Load skill rồi code.** Sửa file thuộc domain có skill mà chưa load thì hook nhắc một lần mỗi phiên.
+4. **Tự kiểm tra.** Agent chạy game hoặc smoke test để xem thay đổi hoạt động thật, không chỉ đọc code.
+5. **Hook kiểm tra khi agent dừng.** Rule fail thì agent phải sửa, không được bỏ qua.
+6. **Evaluator kiểm lại.** Trước khi báo xong việc lớn, subagent `evaluator` kiểm độc lập từng acceptance criteria (chạy test, chạy game, xem ảnh chụp, đọc log). Kết quả ghi vào mục `## Evaluator` của plan.
+7. **Reviewer review trước PR.** Subagent `reviewer` review diff. Sau đó mới mở PR.
+8. **Đóng plan.** Khi đạt hết tiêu chí, chuyển plan sang `docs/exec-plans/completed/`.
+
+Nếu agent sai vì thiếu context, bổ sung vào `docs/`. Nếu một lỗi lặp lại, đề xuất thêm rule cho harness.
+
+### Hook tự chạy
+
+| Lúc | Hook làm gì |
+|---|---|
+| Mở phiên | Nhắc đọc `AGENTS.md`, báo plan đang dở và bước tiếp theo |
+| Sau mỗi lần sửa file | Chạy rule của pack godot trên file vừa sửa (xem bảng dưới) |
+| Trước lệnh shell | Chặn ghi file generated (`.uid`, `.import`, `.godot/`); hỏi trước `--no-verify`, `push --force`, `reset --hard` |
+| Khi agent dừng | `gdlint`, `gdformat`, docs-check, GUT cho test liên quan (khi có `addons/gut`), kiểm plan có kết quả evaluator |
+
+## Kiểm tra code, docs và plan
+
+### Code
+
+Rule của pack godot:
+
+| Rule | Bắt lỗi gì |
+|---|---|
+| `gd_print` | `print` còn sót. Lỗi thật thì dùng `push_warning()` / `push_error()` |
+| `gd_untyped_var` | Biến không có type |
+| `gd_parent_path` | Đường dẫn node đi ngược lên cha (`get_node("../...")`, `get_parent().get_parent()`). Dùng `@export` hoặc signal lên cha |
+| `gd_find_node` | Tìm node theo tên trên cả cây (`find_child`). Dùng `@export`, unique name `%Name` hoặc group |
+| `gd_process_alloc` | `load`/`preload` trong `_process` / `_physics_process`. `preload` ở đầu file hoặc cache vào biến |
+| `gd_secret` | Key hoặc secret viết thẳng trong code (client game là public) |
+| `gdlint`, `gdformat` | Lint và format GDScript (gdtoolkit) |
+
+Chạy lint/format ở máy:
+
+```sh
+pip install gdtoolkit
+gdlint scripts/
+gdformat --check scripts/
+```
+
+Repo chưa có test tự động. Khi cần, cài GUT vào `addons/gut`; hook sẽ tự chạy test liên quan. Hiện các tính năng được kiểm bằng smoke test chạy headless (`godot --headless --path . -s <script>`) và ảnh chụp từ game.
+
+### Docs
+
+`docs-check.sh` kiểm docs có lệch với code không. Ví dụ: mọi đường dẫn viết trong backtick ở `AGENTS.md` và `ARCHITECTURE.md` phải tồn tại thật. Đổi tên hay xoá file thì phải sửa docs theo. `AGENTS.md` giữ dưới 150 dòng; chi tiết để trong `docs/`.
+
+### Plan
+
+Rule `plan_eval`: nếu plan đã tick hết tiêu chí, hoặc đã nằm trong `completed/`, mà mục `## Evaluator` chưa có dòng `<ngày> đạt hết`, thì hook chặn. Agent không được sửa hay xoá tiêu chí cho dễ đạt. Tiêu chí sai thì ghi vào "Còn mở" để người quyết định.
+
+### CI
+
+Workflow `.github/workflows/harness.yml` chạy trên mỗi PR và mỗi lần push vào `main`. Nó dùng harness ở tag cố định (`HARNESS_REF`), nên khi harness ra bản mới thì CI của dự án không tự nhiên đỏ.
+
+- **Rule check**: chỉ chạy trên các dòng PR thêm hoặc sửa. Nợ cũ để skill `harness-gardening` dọn dần.
+- **Docs drift**: chạy `docs-check.sh`.
+- **`gdlint` + `gdformat --check`**: chạy trên mọi file `.gd`.
+
+Muốn tắt một rule cho cả dự án thì thêm rule id vào `HARNESS_DISABLE` trong `.claude/harness.env`, rồi ghi lý do ở mục "Ngoại lệ đã chấp nhận" của `AGENTS.md`.
