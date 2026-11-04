@@ -1,19 +1,19 @@
 # Nhà vào được, đầy đủ tiện nghi
 
 ## Mục tiêu & acceptance criteria
-- [ ] Nhà lớn hơn (14×10 m), 4 phòng: phòng khách, bếp + bàn ăn, phòng ngủ, phòng tắm; có tường ngăn, cửa thông phòng, cửa sổ
-- [ ] Vào liền mạch: bước vào trong → mái + nửa trên tường ẩn, camera lại gần; ra ngoài → hiện lại
-- [ ] HUD hiện tên phòng đang đứng ("Phòng khách"...), ra sân → "Sân nhà"; vườn vẫn hoạt động như cũ
-- [ ] Đồ đạc là vật cản: sofa, bàn trà, kệ TV, kệ sách, thảm, cây cảnh · tủ bếp + bồn rửa, bếp nấu, tủ lạnh, bàn ăn + 4 ghế · giường, tủ đầu giường, tủ quần áo · bồn cầu, lavabo + gương, vòi sen
-- [ ] Đến gần + bấm E: mở/đóng cửa chính và cửa phòng tắm (cửa đóng thì chặn), bật/tắt đèn cây + đèn ngủ, bật/tắt TV. HUD hiện gợi ý `[E] ...`
-- [ ] Smoke test có cửa sổ pass; `check.sh`, `docs-check.sh`, `gdlint`, `gdformat --check` pass
+- [x] Nhà lớn hơn (14×10 m), 4 phòng: phòng khách, bếp + bàn ăn, phòng ngủ, phòng tắm; có tường ngăn, cửa thông phòng, cửa sổ
+- [x] Vào liền mạch: bước vào trong → mái + nửa trên tường ẩn, camera lại gần; ra ngoài → hiện lại
+- [x] HUD hiện tên phòng đang đứng ("Phòng khách"...), ra sân → "Sân nhà"; vườn vẫn hoạt động như cũ
+- [x] Đồ đạc là vật cản: sofa, bàn trà, kệ TV, kệ sách, thảm, cây cảnh · tủ bếp + bồn rửa, bếp nấu, tủ lạnh, bàn ăn + 4 ghế · giường, tủ đầu giường, tủ quần áo · bồn cầu, lavabo + gương, vòi sen
+- [x] Đến gần + bấm E: mở/đóng cửa chính và cửa phòng tắm (cửa đóng thì chặn), bật/tắt đèn cây + đèn ngủ, bật/tắt TV. HUD hiện gợi ý `[E] ...`
+- [x] Smoke test có cửa sổ pass; `check.sh`, `docs-check.sh`, `gdlint`, `gdformat --check` pass
 
 ## Bước
 - [x] Helper chung: `MeshKit` (dựng khối), `NamedArea` (vùng có tên), `Interactable` (vùng bấm E); Garden kế thừa NamedArea
 - [x] House: tường sinh từ dữ liệu (lỗ cửa/cửa sổ), sàn từng phòng, mái; vùng trong nhà ẩn mái + nửa trên tường
 - [x] Đồ đạc: `furniture.gd` (trang trí) + `lamp.gd`, `tv.gd`, `door.gd` (tương tác)
 - [x] Player: vùng tương tác, phím E, camera lại gần khi trong nhà; World: HUD phòng + gợi ý
-- [ ] Smoke test, docs, PR
+- [x] Smoke test, docs, PR — b971431, PR #2
 
 ## Quyết định
 - 2026-11-04 Vào nhà liền mạch, không tách scene — vì user chọn; giữ một map, không cần chuyển cảnh/lưu trạng thái
@@ -28,4 +28,4 @@
 - Chưa có test GUT (chưa cài `addons/gut`); kiểm bằng smoke test scratchpad
 
 ## Evaluator
-- 2026-11-04 đang chạy — tiêu chí bỏ tick tới khi có kết quả
+- 2026-11-04 đạt hết — kiểm lại trên main sau PR #3: smoke test có cửa sổ 89/89 (4 phòng + tường/cửa sổ chặn, cutaway mái/nửa tường + tầng 2 ẩn, camera gần/xa, HUD phòng/Sân nhà/vườn, 17 loại đồ có collision, E cửa/đèn/TV + cửa đóng chặn); gdlint, gdformat --check, check.sh, docs-check pass
