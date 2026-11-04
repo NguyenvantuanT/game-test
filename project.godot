@@ -1,0 +1,5 @@
+config_version=5
+
+[application]
+config/name="game-test"
+config/features=PackedStringArray("4.5")

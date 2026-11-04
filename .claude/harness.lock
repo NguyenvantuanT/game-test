@@ -1,0 +1,16 @@
+# vtinter-harness 6.1.0 · pack: godot — scaffold.sh ghi, đừng sửa tay
+81b9428b972af5b1cbb9c45ab25114ec95f219a3 AGENTS.md
+aece9bb6627e130741a25e00f0aaddc9983f8b33 ARCHITECTURE.md
+52224ecad88233ff0783d398fb106d859d597986 CLAUDE.md
+8ace9e53c43429487186d51e5d65e868d455120e .github/workflows/harness.yml
+43d2d5de514209472f7cd84870973ef9289ae952 docs/PLANS.md
+9bfa92758f4ae426969b08531696aca8f267de9b docs/QUALITY_SCORE.md
+e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 docs/design-docs/.gitkeep
+e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 docs/exec-plans/active/.gitkeep
+e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 docs/exec-plans/completed/.gitkeep
+e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 docs/generated/.gitkeep
+68cf76bdbc9658a128235cf364980e2390c2a81b docs/golden-principles.md
+e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 docs/product-specs/.gitkeep
+e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 docs/references/.gitkeep
+2d43018cb1881d7679dc75b62873950f97cb9571 docs/tech-debt-tracker.md
+6c63dc6d8a71ada124bee229a4dd9454fa9ae2cc .claude/harness.env
