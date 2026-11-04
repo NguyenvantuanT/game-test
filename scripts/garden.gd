@@ -113,7 +113,9 @@ func _build_fence() -> void:
 	]
 	for segment: AABB in segments:
 		var extent := Vector3(
-			maxf(segment.size.x, FENCE_THICKNESS), FENCE_HEIGHT, maxf(segment.size.z, FENCE_THICKNESS)
+			maxf(segment.size.x, FENCE_THICKNESS),
+			FENCE_HEIGHT,
+			maxf(segment.size.z, FENCE_THICKNESS)
 		)
 		var center := segment.position + segment.size / 2.0 + Vector3(0.0, FENCE_HEIGHT / 2.0, 0.0)
 		var rail := BoxMesh.new()
