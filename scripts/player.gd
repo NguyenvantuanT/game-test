@@ -1,40 +1,24 @@
 class_name Player
-extends CharacterBody2D
-## Nhân vật top-down đi 4 hướng (WASD / phím mũi tên). Camera đi theo.
+extends CharacterBody3D
+## Nhân vật đi 4 hướng trên mặt đất (WASD / phím mũi tên).
+## Camera chéo cố định là con của Player nên đi theo mà không xoay;
+## chỉ node `Model` xoay theo hướng đi.
 
-const RADIUS: float = 14.0
-const BODY_COLOR: Color = Color(0.95, 0.75, 0.3)
-const OUTLINE_COLOR: Color = Color(0.35, 0.22, 0.1)
-const EYE_COLOR: Color = Color(0.15, 0.1, 0.05)
+@export var speed: float = 5.0
+@export var turn_speed: float = 12.0
 
-@export var speed: float = 220.0
+var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
-var _facing: Vector2 = Vector2.DOWN
-
-@onready var _camera: Camera2D = $Camera2D
+@onready var _model: Node3D = $Model
 
 
-func _physics_process(_delta: float) -> void:
-	var direction := Input.get_vector(&"move_left", &"move_right", &"move_up", &"move_down")
-	velocity = direction * speed
+func _physics_process(delta: float) -> void:
+	var input := Input.get_vector(&"move_left", &"move_right", &"move_up", &"move_down")
+	var direction := Vector3(input.x, 0.0, input.y)
+	velocity.x = direction.x * speed
+	velocity.z = direction.z * speed
+	velocity.y -= _gravity * delta
 	move_and_slide()
-	if direction != Vector2.ZERO and not direction.is_equal_approx(_facing):
-		_facing = direction
-		queue_redraw()
-
-
-## Giới hạn camera trong vùng map (toạ độ world).
-func set_camera_limits(bounds: Rect2i) -> void:
-	_camera.limit_left = bounds.position.x
-	_camera.limit_top = bounds.position.y
-	_camera.limit_right = bounds.end.x
-	_camera.limit_bottom = bounds.end.y
-
-
-func _draw() -> void:
-	draw_circle(Vector2.ZERO, RADIUS + 2.0, OUTLINE_COLOR)
-	draw_circle(Vector2.ZERO, RADIUS, BODY_COLOR)
-	var side := _facing.orthogonal() * 5.0
-	var front := _facing * 6.0
-	draw_circle(front + side, 2.5, EYE_COLOR)
-	draw_circle(front - side, 2.5, EYE_COLOR)
+	if direction != Vector3.ZERO:
+		var target_yaw := atan2(direction.x, direction.z)
+		_model.rotation.y = lerp_angle(_model.rotation.y, target_yaw, turn_speed * delta)

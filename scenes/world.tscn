@@ -1,80 +1,109 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scripts/world.gd" id="1_world"]
 [ext_resource type="PackedScene" path="res://scenes/house.tscn" id="2_house"]
 [ext_resource type="PackedScene" path="res://scenes/garden.tscn" id="3_garden"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="4_player"]
 
-[node name="World" type="Node2D"]
+[sub_resource type="ProceduralSkyMaterial" id="SkyMat"]
+sky_top_color = Color(0.38, 0.6, 0.88, 1)
+sky_horizon_color = Color(0.72, 0.82, 0.9, 1)
+ground_bottom_color = Color(0.3, 0.45, 0.25, 1)
+ground_horizon_color = Color(0.72, 0.82, 0.9, 1)
+
+[sub_resource type="Sky" id="Sky"]
+sky_material = SubResource("SkyMat")
+
+[sub_resource type="Environment" id="Env"]
+background_mode = 2
+sky = SubResource("Sky")
+ambient_light_source = 3
+tonemap_mode = 2
+ssao_enabled = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
+size = Vector3(40, 1, 25)
+
+[sub_resource type="StandardMaterial3D" id="Mat_grass"]
+albedo_color = Color(0.42, 0.68, 0.32, 1)
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_ground"]
+material = SubResource("Mat_grass")
+size = Vector3(70, 1, 55)
+
+[sub_resource type="StandardMaterial3D" id="Mat_path"]
+albedo_color = Color(0.82, 0.72, 0.5, 1)
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_path"]
+material = SubResource("Mat_path")
+size = Vector3(1, 0.02, 1)
+
+[node name="World" type="Node3D"]
 script = ExtResource("1_world")
 
-[node name="Grass" type="ColorRect" parent="."]
-offset_right = 1600.0
-offset_bottom = 1000.0
-mouse_filter = 2
-color = Color(0.42, 0.68, 0.32, 1)
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env")
 
-[node name="Paths" type="Node2D" parent="."]
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-0.95, 0.55, 0)
+light_energy = 1.1
+shadow_enabled = true
+directional_shadow_max_distance = 60.0
 
-[node name="FromDoor" type="ColorRect" parent="Paths"]
-offset_left = 398.0
-offset_top = 450.0
-offset_right = 442.0
-offset_bottom = 560.0
-mouse_filter = 2
-color = Color(0.82, 0.72, 0.5, 1)
+[node name="Ground" type="StaticBody3D" parent="."]
+position = Vector3(20, -0.5, 12.5)
+collision_layer = 1
+collision_mask = 0
 
-[node name="Main" type="ColorRect" parent="Paths"]
-offset_left = 398.0
-offset_top = 520.0
-offset_right = 940.0
-offset_bottom = 560.0
-mouse_filter = 2
-color = Color(0.82, 0.72, 0.5, 1)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("BoxShape3D_ground")
 
-[node name="ToGardens" type="ColorRect" parent="Paths"]
-offset_left = 900.0
-offset_top = 250.0
-offset_right = 940.0
-offset_bottom = 750.0
-mouse_filter = 2
-color = Color(0.82, 0.72, 0.5, 1)
+[node name="Mesh" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("BoxMesh_ground")
 
-[node name="ToVegetableGarden" type="ColorRect" parent="Paths"]
-offset_left = 940.0
-offset_top = 250.0
-offset_right = 1000.0
-offset_bottom = 290.0
-mouse_filter = 2
-color = Color(0.82, 0.72, 0.5, 1)
+[node name="Paths" type="Node3D" parent="."]
 
-[node name="ToFlowerGarden" type="ColorRect" parent="Paths"]
-offset_left = 940.0
-offset_top = 710.0
-offset_right = 1000.0
-offset_bottom = 750.0
-mouse_filter = 2
-color = Color(0.82, 0.72, 0.5, 1)
+[node name="FromDoor" type="MeshInstance3D" parent="Paths"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 2.75, 10.5, 0.01, 12.625)
+mesh = SubResource("BoxMesh_path")
+
+[node name="Main" type="MeshInstance3D" parent="Paths"]
+transform = Transform3D(13.5, 0, 0, 0, 1, 0, 0, 0, 1, 16.75, 0.01, 13.5)
+mesh = SubResource("BoxMesh_path")
+
+[node name="ToGardens" type="MeshInstance3D" parent="Paths"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 12.5, 23, 0.01, 12.5)
+mesh = SubResource("BoxMesh_path")
+
+[node name="ToVegetableGarden" type="MeshInstance3D" parent="Paths"]
+transform = Transform3D(1.5, 0, 0, 0, 1, 0, 0, 0, 1, 24.25, 0.01, 6.75)
+mesh = SubResource("BoxMesh_path")
+
+[node name="ToFlowerGarden" type="MeshInstance3D" parent="Paths"]
+transform = Transform3D(1.5, 0, 0, 0, 1, 0, 0, 0, 1, 24.25, 0.01, 18.25)
+mesh = SubResource("BoxMesh_path")
 
 [node name="House" parent="." instance=ExtResource("2_house")]
-position = Vector2(300, 290)
+position = Vector3(10.5, 0, 9.25)
 
-[node name="Gardens" type="Node2D" parent="."]
+[node name="Gardens" type="Node3D" parent="."]
 
 [node name="VegetableGarden" parent="Gardens" instance=ExtResource("3_garden")]
-position = Vector2(1000, 160)
+position = Vector3(29, 0, 6.75)
 display_name = "Vườn rau"
-plant_color = Color(0.3, 0.7, 0.25, 1)
 
 [node name="FlowerGarden" parent="Gardens" instance=ExtResource("3_garden")]
-position = Vector2(1000, 620)
+position = Vector3(29, 0, 18.25)
 display_name = "Vườn hoa"
 soil_color = Color(0.4, 0.27, 0.17, 1)
 plant_color = Color(0.92, 0.42, 0.62, 1)
+plant_kind = 1
 row_count = 3
 
 [node name="Player" parent="." instance=ExtResource("4_player")]
-position = Vector2(420, 600)
+position = Vector3(10.5, 0, 15)
 
 [node name="HUD" type="CanvasLayer" parent="."]
 

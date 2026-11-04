@@ -1,18 +1,17 @@
-extends Node2D
-## Scene chính: map cỏ, ngôi nhà, 2 khu vườn, nhân vật và HUD tên khu vực.
+extends Node3D
+## Scene chính 3D: bãi cỏ, ngôi nhà, 2 khu vườn, nhân vật và HUD tên khu vực.
+## Map nằm trên mặt XZ từ (0, 0) tới MAP_SIZE (mét).
 
-const MAP_RECT: Rect2i = Rect2i(0, 0, 1600, 1000)
+const MAP_SIZE: Vector2 = Vector2(40.0, 25.0)
 const OUTSIDE_TEXT: String = "Sân nhà"
 
 var _current_garden: Garden = null
 
-@onready var _player: Player = $Player
-@onready var _gardens: Node2D = $Gardens
+@onready var _gardens: Node3D = $Gardens
 @onready var _area_label: Label = %AreaLabel
 
 
 func _ready() -> void:
-	_player.set_camera_limits(MAP_RECT)
 	_build_map_bounds()
 	for garden: Garden in _gardens.get_children():
 		garden.player_entered.connect(_on_garden_entered)
@@ -20,23 +19,22 @@ func _ready() -> void:
 	_area_label.text = OUTSIDE_TEXT
 
 
-## Tường vô hình quanh mép map để nhân vật không đi ra ngoài.
+## Mặt phẳng vô hình quanh mép map để nhân vật không đi ra ngoài.
 func _build_map_bounds() -> void:
-	var bounds := StaticBody2D.new()
+	var bounds := StaticBody3D.new()
 	bounds.name = "MapBounds"
-	var rect := Rect2(MAP_RECT)
+	var far := Vector3(MAP_SIZE.x, 0.0, MAP_SIZE.y)
 	var edges: Array[Array] = [
-		[rect.position, Vector2.DOWN],
-		[rect.end, Vector2.UP],
-		[rect.position, Vector2.RIGHT],
-		[rect.end, Vector2.LEFT],
+		[Vector3.ZERO, Vector3.RIGHT],
+		[Vector3.ZERO, Vector3.BACK],
+		[far, Vector3.LEFT],
+		[far, Vector3.FORWARD],
 	]
 	for edge: Array in edges:
-		var shape := WorldBoundaryShape2D.new()
-		shape.normal = edge[1]
-		var collision := CollisionShape2D.new()
+		var shape := WorldBoundaryShape3D.new()
+		shape.plane = Plane(edge[1], edge[0])
+		var collision := CollisionShape3D.new()
 		collision.shape = shape
-		collision.position = edge[0]
 		bounds.add_child(collision)
 	add_child(bounds)
 

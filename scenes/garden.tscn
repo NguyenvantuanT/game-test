@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/garden.gd" id="1_garden"]
 
-[node name="Garden" type="Area2D"]
+[node name="Garden" type="Area3D"]
 collision_layer = 0
 collision_mask = 2
 monitorable = false

@@ -1,15 +1,75 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/house.gd" id="1_house"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_walls"]
-size = Vector2(240, 160)
+[sub_resource type="BoxShape3D" id="BoxShape3D_walls"]
+size = Vector3(6, 3, 4)
 
-[node name="House" type="StaticBody2D"]
+[sub_resource type="StandardMaterial3D" id="Mat_wall"]
+albedo_color = Color(0.93, 0.87, 0.74, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="BoxMesh_walls"]
+material = SubResource("Mat_wall")
+size = Vector3(6, 3, 4)
+
+[sub_resource type="StandardMaterial3D" id="Mat_roof"]
+albedo_color = Color(0.72, 0.25, 0.2, 1)
+roughness = 0.8
+
+[sub_resource type="PrismMesh" id="PrismMesh_roof"]
+material = SubResource("Mat_roof")
+size = Vector3(7, 1.8, 4.6)
+
+[sub_resource type="StandardMaterial3D" id="Mat_door"]
+albedo_color = Color(0.45, 0.28, 0.15, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_door"]
+material = SubResource("Mat_door")
+size = Vector3(1.1, 1.9, 0.1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_window"]
+albedo_color = Color(0.6, 0.82, 0.95, 1)
+metallic = 0.2
+roughness = 0.2
+
+[sub_resource type="BoxMesh" id="BoxMesh_window"]
+material = SubResource("Mat_window")
+size = Vector3(1, 0.8, 0.08)
+
+[sub_resource type="BoxMesh" id="BoxMesh_chimney"]
+material = SubResource("Mat_door")
+size = Vector3(0.6, 1.4, 0.6)
+
+[node name="House" type="StaticBody3D"]
 collision_layer = 1
 collision_mask = 0
 script = ExtResource("1_house")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(120, 80)
-shape = SubResource("RectangleShape2D_walls")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 1.5, 0)
+shape = SubResource("BoxShape3D_walls")
+
+[node name="Walls" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.5, 0)
+mesh = SubResource("BoxMesh_walls")
+
+[node name="Roof" type="MeshInstance3D" parent="."]
+position = Vector3(0, 3.9, 0)
+mesh = SubResource("PrismMesh_roof")
+
+[node name="Chimney" type="MeshInstance3D" parent="."]
+position = Vector3(1.8, 4.2, -0.8)
+mesh = SubResource("BoxMesh_chimney")
+
+[node name="Door" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.95, 2.03)
+mesh = SubResource("BoxMesh_door")
+
+[node name="WindowLeft" type="MeshInstance3D" parent="."]
+position = Vector3(-1.9, 1.8, 2.03)
+mesh = SubResource("BoxMesh_window")
+
+[node name="WindowRight" type="MeshInstance3D" parent="."]
+position = Vector3(1.9, 1.8, 2.03)
+mesh = SubResource("BoxMesh_window")

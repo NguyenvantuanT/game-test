@@ -13,6 +13,10 @@ window/size/viewport_width=1152
 window/size/viewport_height=648
 window/stretch/mode="canvas_items"
 
+[rendering]
+
+anti_aliasing/quality/msaa_3d=2
+
 [input]
 
 move_left={
@@ -42,5 +46,5 @@ move_down={
 
 [layer_names]
 
-2d_physics/layer_1="world"
-2d_physics/layer_2="player"
+3d_physics/layer_1="world"
+3d_physics/layer_2="player"
