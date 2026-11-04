@@ -66,11 +66,11 @@ mesh = SubResource("BoxMesh_ground")
 [node name="Paths" type="Node3D" parent="."]
 
 [node name="FromDoor" type="MeshInstance3D" parent="Paths"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 2.75, 10.5, 0.01, 12.625)
+transform = Transform3D(1.2, 0, 0, 0, 1, 0, 0, 0, 1.5, 8.5, 0.01, 12.75)
 mesh = SubResource("BoxMesh_path")
 
 [node name="Main" type="MeshInstance3D" parent="Paths"]
-transform = Transform3D(13.5, 0, 0, 0, 1, 0, 0, 0, 1, 16.75, 0.01, 13.5)
+transform = Transform3D(15.5, 0, 0, 0, 1, 0, 0, 0, 1, 15.75, 0.01, 13.5)
 mesh = SubResource("BoxMesh_path")
 
 [node name="ToGardens" type="MeshInstance3D" parent="Paths"]
@@ -86,7 +86,7 @@ transform = Transform3D(1.5, 0, 0, 0, 1, 0, 0, 0, 1, 24.25, 0.01, 18.25)
 mesh = SubResource("BoxMesh_path")
 
 [node name="House" parent="." instance=ExtResource("2_house")]
-position = Vector3(10.5, 0, 9.25)
+position = Vector3(10.5, 0, 7)
 
 [node name="Gardens" type="Node3D" parent="."]
 
@@ -128,4 +128,24 @@ theme_override_colors/font_color = Color(1, 1, 1, 0.85)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 14
-text = "WASD / phím mũi tên để di chuyển"
+text = "WASD / phím mũi tên: di chuyển · E: tương tác"
+
+[node name="Prompt" type="Label" parent="HUD"]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -72.0
+offset_right = 200.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1
