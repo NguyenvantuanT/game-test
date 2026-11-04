@@ -1,16 +1,15 @@
 name: harness
 
-# Tạm tắt tự chạy: chờ repo harness có tag để điền HARNESS_REF (TD-3).
-# Bật lại: khôi phục 2 trigger dưới và xoá workflow_dispatch.
-#  pull_request:
-#  push:
-#    branches: [main]
 on:
+  pull_request:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 env:
   HARNESS_REPO: https://github.com/NguyenvantuanT/rual-transpo-skills-claude.git
-  HARNESS_REF: <tag đang dùng, vd v5.0.0 — không để main: commit mới lên harness không được làm đỏ CI dự án>
+  # Tag cố định, không để main: commit mới lên harness không được làm đỏ CI dự án.
+  HARNESS_REF: v6.1.0
 
 jobs:
   harness:
