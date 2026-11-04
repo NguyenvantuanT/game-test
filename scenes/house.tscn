@@ -1,17 +1,11 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/house.gd" id="1_house"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_walls"]
-size = Vector3(6, 3, 4)
-
-[sub_resource type="StandardMaterial3D" id="Mat_wall"]
-albedo_color = Color(0.93, 0.87, 0.74, 1)
-roughness = 0.9
-
-[sub_resource type="BoxMesh" id="BoxMesh_walls"]
-material = SubResource("Mat_wall")
-size = Vector3(6, 3, 4)
+[ext_resource type="Script" path="res://scripts/named_area.gd" id="2_area"]
+[ext_resource type="Script" path="res://scripts/furniture.gd" id="3_furniture"]
+[ext_resource type="Script" path="res://scripts/lamp.gd" id="4_lamp"]
+[ext_resource type="Script" path="res://scripts/tv.gd" id="5_tv"]
+[ext_resource type="Script" path="res://scripts/door.gd" id="6_door"]
 
 [sub_resource type="StandardMaterial3D" id="Mat_roof"]
 albedo_color = Color(0.72, 0.25, 0.2, 1)
@@ -19,57 +13,218 @@ roughness = 0.8
 
 [sub_resource type="PrismMesh" id="PrismMesh_roof"]
 material = SubResource("Mat_roof")
-size = Vector3(7, 1.8, 4.6)
+size = Vector3(10.8, 2.6, 14.8)
 
-[sub_resource type="StandardMaterial3D" id="Mat_door"]
+[sub_resource type="StandardMaterial3D" id="Mat_chimney"]
 albedo_color = Color(0.45, 0.28, 0.15, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_door"]
-material = SubResource("Mat_door")
-size = Vector3(1.1, 1.9, 0.1)
-
-[sub_resource type="StandardMaterial3D" id="Mat_window"]
-albedo_color = Color(0.6, 0.82, 0.95, 1)
-metallic = 0.2
-roughness = 0.2
-
-[sub_resource type="BoxMesh" id="BoxMesh_window"]
-material = SubResource("Mat_window")
-size = Vector3(1, 0.8, 0.08)
-
 [sub_resource type="BoxMesh" id="BoxMesh_chimney"]
-material = SubResource("Mat_door")
-size = Vector3(0.6, 1.4, 0.6)
+material = SubResource("Mat_chimney")
+size = Vector3(0.6, 1.6, 0.6)
+
+[sub_resource type="BoxShape3D" id="Shape_interior"]
+size = Vector3(13.6, 3, 9.6)
+
+[sub_resource type="BoxShape3D" id="Shape_living"]
+size = Vector3(8, 2, 5)
+
+[sub_resource type="BoxShape3D" id="Shape_kitchen"]
+size = Vector3(6, 2, 5)
+
+[sub_resource type="BoxShape3D" id="Shape_bedroom"]
+size = Vector3(10, 2, 5)
+
+[sub_resource type="BoxShape3D" id="Shape_bathroom"]
+size = Vector3(4, 2, 5)
 
 [node name="House" type="StaticBody3D"]
 collision_layer = 1
 collision_mask = 0
 script = ExtResource("1_house")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-position = Vector3(0, 1.5, 0)
-shape = SubResource("BoxShape3D_walls")
+[node name="Roof" type="Node3D" parent="."]
 
-[node name="Walls" type="MeshInstance3D" parent="."]
-position = Vector3(0, 1.5, 0)
-mesh = SubResource("BoxMesh_walls")
-
-[node name="Roof" type="MeshInstance3D" parent="."]
-position = Vector3(0, 3.9, 0)
+[node name="RoofMesh" type="MeshInstance3D" parent="Roof"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 4.3, 0)
 mesh = SubResource("PrismMesh_roof")
 
-[node name="Chimney" type="MeshInstance3D" parent="."]
-position = Vector3(1.8, 4.2, -0.8)
+[node name="Chimney" type="MeshInstance3D" parent="Roof"]
+position = Vector3(4, 4.9, -2)
 mesh = SubResource("BoxMesh_chimney")
 
-[node name="Door" type="MeshInstance3D" parent="."]
-position = Vector3(0, 0.95, 2.03)
-mesh = SubResource("BoxMesh_door")
+[node name="Interior" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
 
-[node name="WindowLeft" type="MeshInstance3D" parent="."]
-position = Vector3(-1.9, 1.8, 2.03)
-mesh = SubResource("BoxMesh_window")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interior"]
+position = Vector3(0, 1.5, 0)
+shape = SubResource("Shape_interior")
 
-[node name="WindowRight" type="MeshInstance3D" parent="."]
-position = Vector3(1.9, 1.8, 2.03)
-mesh = SubResource("BoxMesh_window")
+[node name="Rooms" type="Node3D" parent="."]
+
+[node name="LivingRoom" type="Area3D" parent="Rooms"]
+script = ExtResource("2_area")
+display_name = "Phòng khách"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/LivingRoom"]
+position = Vector3(-3, 1, 2.5)
+shape = SubResource("Shape_living")
+
+[node name="Kitchen" type="Area3D" parent="Rooms"]
+script = ExtResource("2_area")
+display_name = "Bếp"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Kitchen"]
+position = Vector3(4, 1, 2.5)
+shape = SubResource("Shape_kitchen")
+
+[node name="Bedroom" type="Area3D" parent="Rooms"]
+script = ExtResource("2_area")
+display_name = "Phòng ngủ"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Bedroom"]
+position = Vector3(-2, 1, -2.5)
+shape = SubResource("Shape_bedroom")
+
+[node name="Bathroom" type="Area3D" parent="Rooms"]
+script = ExtResource("2_area")
+display_name = "Phòng tắm"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Bathroom"]
+position = Vector3(5, 1, -2.5)
+shape = SubResource("Shape_bathroom")
+
+[node name="Furniture" type="Node3D" parent="."]
+
+[node name="TvStand" type="StaticBody3D" parent="Furniture"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -6.6, 0, 2.6)
+script = ExtResource("3_furniture")
+kind = 2
+
+[node name="Rug" type="StaticBody3D" parent="Furniture"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5, 0, 2.6)
+script = ExtResource("3_furniture")
+kind = 4
+
+[node name="CoffeeTable" type="StaticBody3D" parent="Furniture"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5, 0, 2.6)
+script = ExtResource("3_furniture")
+kind = 1
+
+[node name="Sofa" type="StaticBody3D" parent="Furniture"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -3.4, 0, 2.6)
+script = ExtResource("3_furniture")
+
+[node name="Bookshelf" type="StaticBody3D" parent="Furniture"]
+position = Vector3(-5.5, 0, 0.3)
+script = ExtResource("3_furniture")
+kind = 3
+
+[node name="Plant" type="StaticBody3D" parent="Furniture"]
+position = Vector3(0.4, 0, 4.5)
+script = ExtResource("3_furniture")
+kind = 5
+
+[node name="Fridge" type="StaticBody3D" parent="Furniture"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 6.5, 0, 0.6)
+script = ExtResource("3_furniture")
+kind = 8
+
+[node name="KitchenCounter" type="StaticBody3D" parent="Furniture"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 6.55, 0, 2.25)
+script = ExtResource("3_furniture")
+kind = 6
+
+[node name="Stove" type="StaticBody3D" parent="Furniture"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 6.55, 0, 3.85)
+script = ExtResource("3_furniture")
+kind = 7
+
+[node name="DiningTable" type="StaticBody3D" parent="Furniture"]
+position = Vector3(3.5, 0, 2.8)
+script = ExtResource("3_furniture")
+kind = 9
+
+[node name="Chair1" type="StaticBody3D" parent="Furniture"]
+position = Vector3(3.1, 0, 2.05)
+script = ExtResource("3_furniture")
+kind = 10
+
+[node name="Chair2" type="StaticBody3D" parent="Furniture"]
+position = Vector3(3.9, 0, 2.05)
+script = ExtResource("3_furniture")
+kind = 10
+
+[node name="Chair3" type="StaticBody3D" parent="Furniture"]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 3.1, 0, 3.55)
+script = ExtResource("3_furniture")
+kind = 10
+
+[node name="Chair4" type="StaticBody3D" parent="Furniture"]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 3.9, 0, 3.55)
+script = ExtResource("3_furniture")
+kind = 10
+
+[node name="BedroomRug" type="StaticBody3D" parent="Furniture"]
+position = Vector3(-3, 0, -2.2)
+script = ExtResource("3_furniture")
+kind = 4
+accent = Color(0.4, 0.5, 0.7, 1)
+
+[node name="Bed" type="StaticBody3D" parent="Furniture"]
+position = Vector3(-3, 0, -3.8)
+script = ExtResource("3_furniture")
+kind = 11
+
+[node name="Nightstand" type="StaticBody3D" parent="Furniture"]
+position = Vector3(-4.2, 0, -4.65)
+script = ExtResource("3_furniture")
+kind = 12
+
+[node name="Wardrobe" type="StaticBody3D" parent="Furniture"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.58, 0, -3)
+script = ExtResource("3_furniture")
+kind = 13
+
+[node name="Shower" type="StaticBody3D" parent="Furniture"]
+position = Vector3(6.4, 0, -4.4)
+script = ExtResource("3_furniture")
+kind = 16
+
+[node name="Toilet" type="StaticBody3D" parent="Furniture"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 6.5, 0, -2.6)
+script = ExtResource("3_furniture")
+kind = 14
+
+[node name="Vanity" type="StaticBody3D" parent="Furniture"]
+position = Vector3(3.9, 0, -4.62)
+script = ExtResource("3_furniture")
+kind = 15
+
+[node name="Appliances" type="Node3D" parent="."]
+
+[node name="Tv" type="StaticBody3D" parent="Appliances"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -6.6, 0.5, 2.6)
+script = ExtResource("5_tv")
+
+[node name="FloorLamp" type="StaticBody3D" parent="Appliances"]
+position = Vector3(-3.4, 0, 4.3)
+script = ExtResource("4_lamp")
+
+[node name="BedsideLamp" type="StaticBody3D" parent="Appliances"]
+position = Vector3(-4.2, 0.55, -4.65)
+script = ExtResource("4_lamp")
+height = 0.45
+light_range = 3.5
+
+[node name="Doors" type="Node3D" parent="."]
+
+[node name="FrontDoor" type="Node3D" parent="Doors"]
+position = Vector3(-2.6, 0, 5)
+script = ExtResource("6_door")
+width = 1.2
+
+[node name="BathroomDoor" type="Node3D" parent="Doors"]
+position = Vector3(4, 0, 0)
+script = ExtResource("6_door")

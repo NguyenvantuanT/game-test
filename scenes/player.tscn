@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
 
@@ -14,6 +14,9 @@ roughness = 0.7
 material = SubResource("Mat_body")
 radius = 0.35
 height = 1.6
+
+[sub_resource type="SphereShape3D" id="Shape_interact"]
+radius = 1.4
 
 [sub_resource type="StandardMaterial3D" id="Mat_eye"]
 albedo_color = Color(0.12, 0.08, 0.05, 1)
@@ -51,3 +54,12 @@ position = Vector3(0, 10, 8)
 rotation = Vector3(-0.8961, 0, 0)
 current = true
 fov = 55.0
+
+[node name="InteractArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 4
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractArea"]
+position = Vector3(0, 0.8, 0)
+shape = SubResource("Shape_interact")
