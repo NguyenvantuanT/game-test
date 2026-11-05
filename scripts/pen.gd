@@ -9,13 +9,15 @@ const FENCE_HEIGHT: float = 0.9
 const FLOOR_HEIGHT: float = 0.03
 const TRIGGER_HEIGHT: float = 2.5
 const WALL_MARGIN: float = 0.3  ## Khoảng con vật cách rào.
+const GATE_CLEARANCE: float = 0.6  ## Chừa thêm trước cổng (-Z) để con vật không chắn lối.
+const MIN_SIZE: Vector2 = Vector2(3.0, 4.0)
 const TROUGH_SIZE: Vector3 = Vector3(1.6, 0.3, 0.4)
 const TROUGH_COLOR: Color = Color(0.45, 0.3, 0.16)
 const HAY_COLOR: Color = Color(0.9, 0.78, 0.35)
 
 @export var size: Vector2 = Vector2(5.5, 6.0):
 	set(value):
-		size = value
+		size = value.max(MIN_SIZE)
 		_rebuild()
 @export var animal_kind: Animal.Kind = Animal.Kind.CHICKEN:
 	set(value):
@@ -99,12 +101,12 @@ func _build_animals() -> void:
 	var body := Animal.BODY_SIZE[animal_kind]
 	var reach := maxf(body.x, body.z) / 2.0 + WALL_MARGIN
 	var half := size / 2.0
-	# Chừa chỗ máng ăn ở phía +Z.
+	# Chừa lối trước cổng (-Z) và chỗ máng ăn (+Z).
 	var bounds := Rect2(
 		-half.x + reach,
-		-half.y + reach,
+		-half.y + reach + GATE_CLEARANCE,
 		size.x - reach * 2.0,
-		size.y - reach * 2.0 - TROUGH_SIZE.z * 2.0
+		size.y - reach * 2.0 - GATE_CLEARANCE - TROUGH_SIZE.z * 2.0
 	)
 	var base_seed := hash(display_name)
 	for i in animal_count:

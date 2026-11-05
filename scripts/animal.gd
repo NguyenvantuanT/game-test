@@ -23,7 +23,7 @@ const FEED_PROMPT: String = "Cho ăn"
 const LAYER: int = 1  ## world: Player bị con vật chặn.
 const MASK: int = 1 | 2  ## rào, con khác, Player.
 const ARRIVE_DISTANCE: float = 0.15
-const STUCK_TIME: float = 4.0
+const STUCK_SLACK: float = 1.5  ## Giây dư so với thời gian đi tới đích, quá thì coi là kẹt.
 const REST_TIME: Vector2 = Vector2(1.0, 3.5)
 const EAT_TIME: float = 2.0  ## Đứng yên ăn sau khi được cho ăn.
 const TURN_SPEED: float = 8.0
@@ -49,6 +49,7 @@ var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _target: Vector3 = Vector3.ZERO
 var _rest_left: float = 0.0
 var _walk_time: float = 0.0
+var _walk_limit: float = 0.0
 var _model: Node3D = null
 var _wool: Node3D = null
 var _product: Node3D = null
@@ -56,9 +57,9 @@ var _interactable: Interactable = null
 
 
 func _ready() -> void:
-	var running := not Engine.is_editor_hint()
-	set_process(running)
-	set_physics_process(running)
+	# Chỉ chạy sau `setup()` (đã có hình) và không chạy trong editor.
+	set_process(false)
+	set_physics_process(false)
 
 
 ## Dựng hình + chọn trạng thái ban đầu ngẫu nhiên (theo `seed_value`, lặp lại được).
@@ -100,6 +101,8 @@ func setup(animal_kind: Kind, walk_bounds: Rect2, seed_value: int) -> void:
 		var reach := body + Vector3(0.4, 0.2, 0.4)
 		_interactable = Interactable.create(self, reach, Vector3(0.0, reach.y / 2.0, 0.0), "")
 		_interactable.interacted.connect(interact)
+		set_process(true)
+		set_physics_process(true)
 	_refresh()
 
 
@@ -115,13 +118,15 @@ func _physics_process(delta: float) -> void:
 		return
 	var to_target := _target - position
 	to_target.y = 0.0
-	if to_target.length() < ARRIVE_DISTANCE or _walk_time > STUCK_TIME:
+	if to_target.length() < ARRIVE_DISTANCE or _walk_time > _walk_limit:
 		_rest_left = _rng.randf_range(REST_TIME.x, REST_TIME.y)
 		_pick_target()
 		return
 	_walk_time += delta
 	var direction := to_target.normalized()
-	velocity = direction * SPEED[kind]
+	# `direction` ở toạ độ của chuồng; velocity cần hướng global (chuồng có thể bị xoay).
+	var pen_basis := (get_parent() as Node3D).global_basis
+	velocity = pen_basis * direction * SPEED[kind]
 	move_and_slide()
 	# Kẹp trong chuồng: bị đẩy / xoay cũng không lọt ra cổng.
 	position = Vector3(
@@ -183,6 +188,7 @@ func _pick_target() -> void:
 		0.0,
 		_rng.randf_range(bounds.position.y, bounds.end.y)
 	)
+	_walk_limit = position.distance_to(_target) / SPEED[kind] + STUCK_SLACK
 
 
 func _refresh() -> void:
