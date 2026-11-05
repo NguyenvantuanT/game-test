@@ -7,6 +7,8 @@ extends Area3D
 
 signal player_entered(area: NamedArea)
 signal player_exited(area: NamedArea)
+## Player thu được một vật phẩm trong vùng (vườn, chuồng); World đếm lên HUD.
+signal collected(item: String)
 
 const GROUP: StringName = &"named_areas"
 const PLAYER_LAYER: int = 2

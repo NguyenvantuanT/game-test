@@ -1,6 +1,6 @@
 # game-test
 
-Game 3D thử nghiệm làm bằng Godot 4. Bạn điều khiển một nhân vật đi dạo trong khu đất có ngôi nhà 2 tầng vào được và hai khu vườn để chăm cây, thu hoạch. Camera nhìn chéo từ trên xuống. Hình hiện tại chỉ là khối cơ bản, chưa có model thật.
+Game 3D thử nghiệm làm bằng Godot 4. Bạn điều khiển một nhân vật đi dạo trong khu đất có ngôi nhà 2 tầng vào được hai khu vườn để chăm cây, thu hoạch, và ba chuồng nuôi gà, bò, cừu. Camera nhìn chéo từ trên xuống. Hình hiện tại chỉ là khối cơ bản, chưa có model thật.
 
 Repo được phát triển chủ yếu bằng coding agent (Claude Code), chạy trong bộ harness `vtinter-harness`: luật, hook và subagent kiểm tra giúp agent làm đúng quy trình. Phần [Cách AI làm việc](#cách-ai-làm-việc-trong-repo) bên dưới mô tả quy trình đó.
 
@@ -21,14 +21,15 @@ Scene chính là `scenes/world.tscn`. Lần đầu mở, hoặc sau khi thêm sc
 | Phím | Việc |
 |---|---|
 | WASD / phím mũi tên | Di chuyển |
-| E | Tương tác với vật gần nhất: mở/đóng cửa, bật/tắt đèn và TV, thắp/tắt hương, tưới cây, bón phân, thu hoạch |
+| E | Tương tác với vật gần nhất: mở/đóng cửa, bật/tắt đèn và TV, thắp/tắt hương, tưới cây, bón phân, thu hoạch, cho ăn, nhặt trứng, vắt sữa, cắt lông |
 
-Góc trên bên trái hiện tên khu vực đang đứng, góc trên bên phải đếm số rau và hoa đã thu hoạch. Khi đứng gần vật tương tác được, gợi ý `[E] ...` hiện ở dưới màn hình.
+Góc trên bên trái hiện tên khu vực đang đứng, góc trên bên phải đếm số rau, hoa, trứng, sữa, len đã thu được. Khi đứng gần vật tương tác được, gợi ý `[E] ...` hiện ở dưới màn hình.
 
 ### Có gì trong map
 
-- **Sân nhà**: lối đi nối nhà với vườn rau và vườn hoa.
+- **Sân nhà**: lối đi nối nhà với vườn rau, vườn hoa và khu chăn nuôi phía nam nhà.
 - **Vườn rau, vườn hoa**: mỗi cây chăm riêng (xem [Làm vườn](#làm-vườn)).
+- **Chuồng gà, chuồng bò, chuồng cừu**: ba ô rào riêng, cổng quay về phía nhà (xem [Chăn nuôi](#chăn-nuôi)).
 - **Nhà, tầng 1**: phòng khách (sofa, TV, kệ sách, đèn cây), bếp và bàn ăn, phòng ngủ, phòng tắm. Cầu thang nằm trong phòng ngủ.
 - **Nhà, tầng 2**: phòng thờ phía trước, sảnh cầu thang ở giữa, hai phòng ngủ hai bên, nhà vệ sinh phía sau.
 
@@ -42,6 +43,15 @@ Góc trên bên trái hiện tên khu vực đang đứng, góc trên bên phả
 
 Tưới đều thì cây chín sau khoảng 90 giây, có bón phân thì nhanh hơn. Cây lớn qua 4 giai đoạn: mầm, đang lớn, sắp chín (rau có quả xanh, hoa có nụ), chín. Trạng thái vườn chưa được lưu khi thoát game.
 
+### Chăn nuôi
+
+Gà (5 con), bò (2 con) và cừu (3 con) tự đi lang thang trong chuồng; chúng chắn đường nên bạn không đi xuyên qua được. Đứng gần một con và bấm E:
+
+1. **Cho ăn** nếu con vật đang đói. Sau đó nó cần thời gian: gà 30 giây, cừu 45 giây, bò 60 giây. Lúc này bấm E không có tác dụng.
+2. Khi xong, sản phẩm xoay trên đầu con vật: quả trứng, chai sữa hoặc cuộn len (lông cừu cũng dày dần lên). Bấm **Nhặt trứng**, **Vắt sữa** hoặc **Cắt lông** để thu; HUD cộng thêm 1 và con vật lại đói.
+
+Trạng thái chuồng chưa được lưu khi thoát game.
+
 ### Nhìn trong nhà
 
 Khi bạn vào nhà, mái và nửa trên tường tầng đang đứng được ẩn đi để nhìn thấy bên trong. Đứng ở tầng 1 thì cả tầng 2 cũng ẩn. Ra sân thì nhà hiện lại đầy đủ.
@@ -49,8 +59,8 @@ Khi bạn vào nhà, mái và nửa trên tường tầng đang đứng được
 ## Cấu trúc
 
 ```
-scenes/          world (map + HUD), house, garden, player
-scripts/         logic từng scene + helper dựng hình (mesh_kit, named_area, interactable)
+scenes/          world (map + HUD), house, garden, pen, player
+scripts/         logic từng scene + helper dựng hình (mesh_kit, named_area, interactable, fence)
 docs/            tri thức của dự án, agent đọc trước khi làm (xem bảng dưới)
 .claude/         cấu hình harness cho repo (rule bị tắt, pack đang bật)
 .github/         CI chạy cùng bộ kiểm tra với hook ở máy
