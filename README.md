@@ -1,6 +1,6 @@
 # game-test
 
-Game 3D thử nghiệm làm bằng Godot 4. Bạn điều khiển một nhân vật đi dạo trong khu đất có ngôi nhà 2 tầng vào được và hai khu vườn. Camera nhìn chéo từ trên xuống. Hình hiện tại chỉ là khối cơ bản, chưa có model thật.
+Game 3D thử nghiệm làm bằng Godot 4. Bạn điều khiển một nhân vật đi dạo trong khu đất có ngôi nhà 2 tầng vào được và hai khu vườn để chăm cây, thu hoạch. Camera nhìn chéo từ trên xuống. Hình hiện tại chỉ là khối cơ bản, chưa có model thật.
 
 Repo được phát triển chủ yếu bằng coding agent (Claude Code), chạy trong bộ harness `vtinter-harness`: luật, hook và subagent kiểm tra giúp agent làm đúng quy trình. Phần [Cách AI làm việc](#cách-ai-làm-việc-trong-repo) bên dưới mô tả quy trình đó.
 
@@ -21,15 +21,28 @@ Scene chính là `scenes/world.tscn`. Lần đầu mở, hoặc sau khi thêm sc
 | Phím | Việc |
 |---|---|
 | WASD / phím mũi tên | Di chuyển |
-| E | Tương tác với vật gần nhất: mở/đóng cửa, bật/tắt đèn và TV, thắp/tắt hương |
+| E | Tương tác với vật gần nhất: mở/đóng cửa, bật/tắt đèn và TV, thắp/tắt hương, tưới cây, bón phân, thu hoạch |
 
-Góc trên bên trái hiện tên khu vực đang đứng. Khi đứng gần vật tương tác được, gợi ý `[E] ...` hiện ở dưới màn hình.
+Góc trên bên trái hiện tên khu vực đang đứng, góc trên bên phải đếm số rau và hoa đã thu hoạch. Khi đứng gần vật tương tác được, gợi ý `[E] ...` hiện ở dưới màn hình.
 
 ### Có gì trong map
 
 - **Sân nhà**: lối đi nối nhà với vườn rau và vườn hoa.
+- **Vườn rau, vườn hoa**: mỗi cây chăm riêng (xem [Làm vườn](#làm-vườn)).
 - **Nhà, tầng 1**: phòng khách (sofa, TV, kệ sách, đèn cây), bếp và bàn ăn, phòng ngủ, phòng tắm. Cầu thang nằm trong phòng ngủ.
 - **Nhà, tầng 2**: phòng thờ phía trước, sảnh cầu thang ở giữa, hai phòng ngủ hai bên, nhà vệ sinh phía sau.
+
+### Làm vườn
+
+Đứng gần một cây và bấm E. Mỗi lần bấm làm một việc, theo thứ tự ưu tiên:
+
+1. **Thu hoạch** nếu cây đã chín: rau có quả đỏ, hoa nở bông. Cây quay về mầm và mọc lại, HUD cộng thêm 1.
+2. **Tưới cây** nếu đất khô. Cây chỉ lớn khi đất ẩm (sẫm màu); một lần tưới giữ ẩm 30 giây.
+3. **Bón phân** nếu chưa có phân. Cây lớn nhanh gấp đôi trong 30 giây, trên đất có hạt phân trắng.
+
+Tưới đều thì cây chín sau khoảng 90 giây, có bón phân thì nhanh hơn. Cây lớn qua 4 giai đoạn: mầm, đang lớn, sắp chín (rau có quả xanh, hoa có nụ), chín. Trạng thái vườn chưa được lưu khi thoát game.
+
+### Nhìn trong nhà
 
 Khi bạn vào nhà, mái và nửa trên tường tầng đang đứng được ẩn đi để nhìn thấy bên trong. Đứng ở tầng 1 thì cả tầng 2 cũng ẩn. Ra sân thì nhà hiện lại đầy đủ.
 

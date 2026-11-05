@@ -52,12 +52,14 @@ func set_camera_close(close: bool) -> void:
 	)
 
 
+## Nhắm vật gần nhất đang có việc để làm. Vật có prompt rỗng (vd cây đã tưới + bón)
+## bị bỏ qua, để không che vật bên cạnh đang cần bấm E.
 func _update_focus() -> void:
 	var nearest: Interactable = null
 	var best := INF
 	for area: Area3D in _interact_area.get_overlapping_areas():
 		var candidate := area as Interactable
-		if candidate == null:
+		if candidate == null or candidate.prompt.is_empty():
 			continue
 		var distance := global_position.distance_squared_to(candidate.global_position)
 		if distance < best:

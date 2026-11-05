@@ -1,8 +1,11 @@
 @tool
 class_name Garden
 extends NamedArea
-## Một khu vườn 3D: luống đất, hàng rào có cổng phía -X, các hàng cây, biển tên.
+## Một khu vườn 3D: luống đất, hàng rào có cổng phía -X, các hàng cây (`Crop`), biển tên.
 ## Gốc toạ độ = tâm luống trên mặt đất. Hình và collision sinh trong code theo export.
+## Cây bắt đầu ở giai đoạn ngẫu nhiên (seed theo tên vườn → lần chạy nào cũng giống nhau).
+
+signal crop_harvested(kind: PlantKind)
 
 enum PlantKind { VEGETABLE, FLOWER }
 
@@ -15,7 +18,6 @@ const PLANT_SPACING: float = 0.9
 const EDGE_MARGIN: float = 0.6
 const TRIGGER_HEIGHT: float = 2.0
 const FENCE_COLOR: Color = Color(0.55, 0.38, 0.2)
-const STEM_COLOR: Color = Color(0.25, 0.55, 0.2)
 const WORLD_LAYER: int = 1
 
 @export var size: Vector2 = Vector2(8.0, 5.5):
@@ -42,6 +44,7 @@ const WORLD_LAYER: int = 1
 var _generated: Node3D = null
 ## Shape của Area3D phải là con trực tiếp, nên tách khỏi `_generated`.
 var _trigger: CollisionShape3D = null
+var _crops: Array[Crop] = []
 
 
 func _ready() -> void:
@@ -116,30 +119,34 @@ func _build_fence() -> void:
 			)
 
 
+## Các cây đang có (bản sao — smoke test dùng để duyệt từng cây).
+func crops() -> Array[Crop]:
+	return _crops.duplicate()
+
+
 func _build_plants() -> void:
+	_crops.clear()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash(display_name)
 	var inner := size - Vector2.ONE * EDGE_MARGIN * 2.0
 	var per_row := maxi(1, floori(inner.x / PLANT_SPACING) + 1)
 	var start_x := -(per_row - 1) * PLANT_SPACING / 2.0
 	var row_gap := size.y / (row_count + 1)
-	var is_flower := plant_kind == PlantKind.FLOWER
-	var stem_height := 0.4
 	for row in row_count:
 		var z := -size.y / 2.0 + row_gap * (row + 1)
 		for col in per_row:
-			var x := start_x + col * PLANT_SPACING
-			if is_flower:
-				MeshKit.cylinder(
-					_generated,
-					0.03,
-					stem_height,
-					Vector3(x, SOIL_HEIGHT + stem_height / 2.0, z),
-					STEM_COLOR
-				)
-				MeshKit.sphere(
-					_generated, 0.16, Vector3(x, SOIL_HEIGHT + stem_height, z), plant_color
-				)
-			else:
-				MeshKit.sphere(_generated, 0.26, Vector3(x, SOIL_HEIGHT + 0.2, z), plant_color)
+			var crop := Crop.new()
+			crop.name = "Crop_%d_%d" % [row, col]
+			crop.position = Vector3(start_x + col * PLANT_SPACING, SOIL_HEIGHT, z)
+			_generated.add_child(crop)
+			# ~1/6 cây đã chín sẵn để vào vườn là có thể thu hoạch ngay.
+			crop.setup(plant_kind == PlantKind.FLOWER, soil_color, plant_color, rng.randf() * 1.2)
+			crop.harvested.connect(_on_crop_harvested)
+			_crops.append(crop)
+
+
+func _on_crop_harvested() -> void:
+	crop_harvested.emit(plant_kind)
 
 
 func _build_sign() -> void:
