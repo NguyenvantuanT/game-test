@@ -1,10 +1,12 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/world.gd" id="1_world"]
 [ext_resource type="PackedScene" path="res://scenes/house.tscn" id="2_house"]
 [ext_resource type="PackedScene" path="res://scenes/garden.tscn" id="3_garden"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="4_player"]
 [ext_resource type="PackedScene" path="res://scenes/pen.tscn" id="5_pen"]
+[ext_resource type="PackedScene" path="res://scenes/neighbor_home.tscn" id="6_neighbor_home"]
+[ext_resource type="Script" path="res://scripts/dialogue_box.gd" id="7_dialogue_box"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat"]
 sky_top_color = Color(0.38, 0.6, 0.88, 1)
@@ -23,7 +25,7 @@ tonemap_mode = 2
 ssao_enabled = true
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
-size = Vector3(40, 1, 25)
+size = Vector3(56, 1, 25)
 
 [sub_resource type="StandardMaterial3D" id="Mat_grass"]
 albedo_color = Color(0.42, 0.68, 0.32, 1)
@@ -31,7 +33,7 @@ roughness = 1.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_ground"]
 material = SubResource("Mat_grass")
-size = Vector3(70, 1, 55)
+size = Vector3(86, 1, 55)
 
 [sub_resource type="StandardMaterial3D" id="Mat_path"]
 albedo_color = Color(0.82, 0.72, 0.5, 1)
@@ -54,7 +56,7 @@ shadow_enabled = true
 directional_shadow_max_distance = 60.0
 
 [node name="Ground" type="StaticBody3D" parent="."]
-position = Vector3(20, -0.5, 12.5)
+position = Vector3(28, -0.5, 12.5)
 collision_layer = 1
 collision_mask = 0
 
@@ -94,6 +96,10 @@ mesh = SubResource("BoxMesh_path")
 transform = Transform3D(14, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 0.01, 16.75)
 mesh = SubResource("BoxMesh_path")
 
+[node name="ToNeighbors" type="MeshInstance3D" parent="Paths"]
+transform = Transform3D(30.5, 0, 0, 0, 1, 0, 0, 0, 1, 38.75, 0.01, 13.5)
+mesh = SubResource("BoxMesh_path")
+
 [node name="House" parent="." instance=ExtResource("2_house")]
 position = Vector3(10.5, 0, 7)
 
@@ -130,6 +136,23 @@ position = Vector3(17, 0, 20.5)
 display_name = "Chuồng cừu"
 animal_kind = 2
 floor_color = Color(0.55, 0.62, 0.33, 1)
+
+[node name="Neighbors" type="Node3D" parent="."]
+
+[node name="BaHome" parent="Neighbors" instance=ExtResource("6_neighbor_home")]
+position = Vector3(39.5, 0, 7.5)
+display_name = "Nhà bác Ba"
+size = Vector2(9, 10)
+dialogue_id = "ba"
+
+[node name="LanHome" parent="Neighbors" instance=ExtResource("6_neighbor_home")]
+position = Vector3(49.5, 0, 7.5)
+display_name = "Nhà cô Lan"
+size = Vector2(9, 10)
+wall_color = Color(0.82, 0.88, 0.92, 1)
+roof_color = Color(0.3, 0.42, 0.6, 1)
+shirt_color = Color(0.85, 0.35, 0.45, 1)
+dialogue_id = "lan"
 
 [node name="Player" parent="." instance=ExtResource("4_player")]
 position = Vector3(10.5, 0, 15)
@@ -195,3 +218,18 @@ theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 22
 text = "Rau: 0 · Hoa: 0 · Trứng: 0 · Sữa: 0 · Len: 0"
 horizontal_alignment = 2
+
+[node name="DialogueBox" type="PanelContainer" parent="HUD"]
+unique_name_in_owner = true
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -380.0
+offset_top = -40.0
+offset_right = 380.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("7_dialogue_box")
