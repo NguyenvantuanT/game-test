@@ -83,9 +83,7 @@ func sign_in(user_email: String, password: String) -> Result:
 
 
 func sign_up(user_email: String, password: String) -> Result:
-	var result := await _auth(
-		"signup", {"email": user_email.strip_edges(), "password": password}
-	)
+	var result := await _auth("signup", {"email": user_email.strip_edges(), "password": password})
 	if result.ok and not is_signed_in():
 		# Project bật xác nhận email: server không trả phiên.
 		result.ok = false
