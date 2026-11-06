@@ -28,6 +28,10 @@ jobs:
       - name: Docs drift
         run: bash .harness/plugins/harness/engine/docs-check.sh
 
+      # --- pack supabase ---
+      - name: Supabase — schema nằm trong repo
+        run: ls supabase/migrations/*.sql >/dev/null 2>&1 || { echo "::error::Không có supabase/migrations/*.sql — schema chỉ nằm trên server. Xem skill supabase-migrations"; exit 1; }
+
       # --- pack godot ---
       - uses: actions/setup-python@v5
         with:

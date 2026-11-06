@@ -1,4 +1,4 @@
-# vtinter-harness 6.1.0 · pack: godot — scaffold.sh ghi, đừng sửa tay
+# vtinter-harness 6.2.0 · pack: godot supabase — scaffold.sh ghi, đừng sửa tay
 81b9428b972af5b1cbb9c45ab25114ec95f219a3 AGENTS.md
 aece9bb6627e130741a25e00f0aaddc9983f8b33 ARCHITECTURE.md
 52224ecad88233ff0783d398fb106d859d597986 CLAUDE.md
@@ -13,4 +13,4 @@ e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 docs/generated/.gitkeep
 e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 docs/product-specs/.gitkeep
 e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 docs/references/.gitkeep
 2d43018cb1881d7679dc75b62873950f97cb9571 docs/tech-debt-tracker.md
-6c63dc6d8a71ada124bee229a4dd9454fa9ae2cc .claude/harness.env
+dac35ff58294058a4a8865ea2e83a3b4b0fddf68 .claude/harness.env

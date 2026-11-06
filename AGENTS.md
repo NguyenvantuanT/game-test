@@ -8,7 +8,7 @@ Fact riêng của dự án nằm trong repo này; convention chung của stack n
 
 - **Là gì**: game 3D thử nghiệm (`game-test`): nhà, vườn, chuồng, hàng xóm có hội thoại, lưu game theo tài khoản — chi tiết `ARCHITECTURE.md`.
 - **Stack**: Godot 4 + GDScript. `project.godot` khai feature 4.5; máy dev cài Godot 4.7.2 (macOS `/opt/homebrew/bin/godot`, Windows qua winget).
-- **Supabase** (lưu game): schema ở `supabase/migrations/` là nguồn sự thật — sửa schema = thêm file migration mới, áp lên project cùng version, không sửa trên dashboard. Cấu hình máy: `supabase.example.cfg` → `supabase.cfg` (gitignore). Quyết định: `docs/design-docs/2026-11-06-cloud-save.md`.
+- **Supabase** (lưu game): project `Kora`, không dùng CLI (áp migration qua MCP) — quy ước ở khối Stack bên dưới; quyết định + RLS: `docs/design-docs/2026-11-06-cloud-save.md`.
 - **Lệnh riêng của dự án**: chưa có. Lint/format cần `pip install gdtoolkit`; test cần cài GUT vào `addons/gut`.
 
 ## Làm việc
@@ -65,6 +65,18 @@ Khối dưới do `harness-init` sinh theo pack đang bật: đừng sửa tay, 
 | Scene/node, signal, resource, GDScript typed, GUT | `godot-development` (agent `godot-engineer`) |
 | Kiến trúc game: loop, ECS, event bus, state stack | `game-arch-patterns` (plugin `game-architecture`) |
 | Chạy project, đọc lỗi runtime qua MCP | plugin `godot-mcp` |
+
+### Supabase
+
+- Schema ở `supabase/migrations/` là nguồn sự thật — sửa schema = thêm file migration mới `<version>_<tên>.sql`, áp lên project cùng version. Không sửa migration cũ, không sửa schema trên dashboard.
+- Cấu hình máy (URL + publishable key) để ở file gitignore (`.env`, `supabase.cfg`...), commit file mẫu (`.env.example`, `supabase.example.cfg`). Không bao giờ commit service_role / secret key.
+- Có CLI: `supabase start` · reset + chạy lại migration: `supabase db reset` · test RLS (pgTAP): `supabase test db` · migration mới: `supabase migration new <tên>`. Không có CLI: dùng MCP `apply_migration` rồi ghi file theo `list_migrations`.
+
+| Việc | Skill |
+|---|---|
+| Đổi schema (bảng, cột, RLS, grant, function, trigger) | `supabase-migrations` |
+| Sửa `supabase/` (SQL, RLS, view, trigger, edge function) | `supabase-security-review` |
+| App Flutter gọi Supabase: query, RPC, realtime, optimistic update | `flutter-supabase-queries` |
 <!-- harness:stack:end -->
 
 ## Ngoại lệ đã chấp nhận
