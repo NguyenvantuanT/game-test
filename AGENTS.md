@@ -6,8 +6,9 @@ Fact riêng của dự án nằm trong repo này; convention chung của stack n
 
 ## Dự án
 
-- **Là gì**: project Godot thử nghiệm (`game-test`), chưa có gameplay — mới có `project.godot` + `icon.svg`.
-- **Stack**: Godot 4 + GDScript. `project.godot` khai feature 4.5; máy dev đang cài Godot 4.7.2 (`/opt/homebrew/bin/godot`).
+- **Là gì**: game 3D thử nghiệm (`game-test`): nhà, vườn, chuồng, hàng xóm có hội thoại, lưu game theo tài khoản — chi tiết `ARCHITECTURE.md`.
+- **Stack**: Godot 4 + GDScript. `project.godot` khai feature 4.5; máy dev cài Godot 4.7.2 (macOS `/opt/homebrew/bin/godot`, Windows qua winget).
+- **Supabase** (lưu game): schema ở `supabase/migrations/` là nguồn sự thật — sửa schema = thêm file migration mới, áp lên project cùng version, không sửa trên dashboard. Cấu hình máy: `supabase.example.cfg` → `supabase.cfg` (gitignore). Quyết định: `docs/design-docs/2026-11-06-cloud-save.md`.
 - **Lệnh riêng của dự án**: chưa có. Lint/format cần `pip install gdtoolkit`; test cần cài GUT vào `addons/gut`.
 
 ## Làm việc

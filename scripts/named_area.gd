@@ -35,6 +35,16 @@ func _on_display_name_changed() -> void:
 	pass
 
 
+## Trạng thái cần lưu (vườn, chuồng override); [] = không lưu gì.
+func save_state() -> Array:
+	return []
+
+
+## Nạp lại từ `save_state()`; dữ liệu đến từ file nên phải tự kiểm kiểu / giới hạn.
+func load_state(_data: Array) -> void:
+	pass
+
+
 func _on_body_entered(body: Node3D) -> void:
 	if body is Player:
 		player_entered.emit(self)

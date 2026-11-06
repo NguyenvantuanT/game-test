@@ -181,6 +181,18 @@ func collect() -> void:
 	collected.emit(ITEM_NAMES[kind])
 
 
+func save_state() -> Dictionary:
+	return {"state": state, "produce_left": produce_left}
+
+
+func load_state(data: Dictionary) -> void:
+	state = clampi(int(SaveGame.number(data, "state")), State.HUNGRY, State.READY) as State
+	produce_left = clampf(SaveGame.number(data, "produce_left"), 0.0, PRODUCE_TIME[kind])
+	if state == State.PRODUCING and produce_left == 0.0:
+		state = State.READY
+	_refresh()
+
+
 func _pick_target() -> void:
 	_walk_time = 0.0
 	_target = Vector3(

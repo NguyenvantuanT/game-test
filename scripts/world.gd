@@ -5,6 +5,7 @@ extends Node3D
 ## HUD: tên khu vực = NamedArea (phòng, vườn) vào gần nhất; gợi ý `[E] ...` từ Player;
 ## góc phải đếm vật phẩm thu được (NamedArea.collected từ vườn, chuồng); hộp hội thoại khi nói
 ## chuyện với hàng xóm (Player đứng yên tới khi đóng).
+## Lưu game: `SaveFlow` (đăng nhập, tải / gửi, hỏi khi thoát) gọi `save_data` / `load_data`.
 
 const MAP_SIZE: Vector2 = Vector2(56.0, 25.0)
 const OUTSIDE_TEXT: String = "Sân nhà"
@@ -20,6 +21,7 @@ var _counts: Dictionary[String, int] = {}
 @onready var _prompt_label: Label = %Prompt
 @onready var _count_label: Label = %CountLabel
 @onready var _dialogue: DialogueBox = %DialogueBox
+@onready var _save_flow: SaveFlow = $SaveFlow
 
 
 func _ready() -> void:
@@ -38,7 +40,7 @@ func _ready() -> void:
 	_house.player_inside_changed.connect(_player.set_camera_close)
 	_player.focus_changed.connect(_on_focus_changed)
 	_refresh_area_label()
-	_refresh_count_label()
+	_save_flow.setup(save_data, load_data)
 
 
 ## Số đã thu theo tên vật phẩm, vd "Rau", "Trứng" (smoke test đọc để kiểm HUD).
@@ -114,3 +116,31 @@ func _set_player_active(active: bool) -> void:
 	_player.set_physics_process(active)
 	_player.set_process_unhandled_input(active)
 	_prompt_label.visible = active and _prompt_label.text != "[E] "
+
+
+## Trạng thái cần lưu: số đồ + trạng thái từng vùng (vườn, chuồng) theo đường dẫn node.
+func save_data() -> Dictionary:
+	var areas := {}
+	for node: Node in get_tree().get_nodes_in_group(NamedArea.GROUP):
+		var area := node as NamedArea
+		var state := area.save_state()
+		if not state.is_empty():
+			areas[str(get_path_to(area))] = state
+	return {"version": SaveGame.VERSION, "counts": _counts.duplicate(), "areas": areas}
+
+
+## Nạp bản lưu (từ file / server: kiểm kiểu từng mục, mục lạ hoặc sai kiểu bỏ qua).
+func load_data(data: Dictionary) -> void:
+	if not SaveGame.is_valid(data):
+		return
+	var counts: Variant = data.get("counts")
+	if counts is Dictionary:
+		for item: String in _item_order():
+			_counts[item] = maxi(0, int(SaveGame.number(counts, item)))
+	var areas: Variant = data.get("areas")
+	if areas is Dictionary:
+		for key: Variant in areas:
+			var area := get_node_or_null(NodePath(str(key))) as NamedArea
+			if area != null and areas[key] is Array:
+				area.load_state(areas[key])
+	_refresh_count_label()

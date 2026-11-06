@@ -14,7 +14,7 @@ godot --path . --editor     # mở Godot Editor (bấm F5 để chạy)
 godot --headless --path .   # chạy không cửa sổ, dùng cho script kiểm tra
 ```
 
-Scene chính là `scenes/world.tscn`. Lần đầu mở, hoặc sau khi thêm script có `class_name` mới, nên chạy `godot --headless --path . --import` để Godot cập nhật cache class.
+Scene chính là `scenes/world.tscn`. Muốn lưu game theo tài khoản (chơi ở máy khác vẫn tiếp tục được) thì copy `supabase.example.cfg` thành `supabase.cfg` và điền URL + publishable key của project Supabase; không có file này game chỉ lưu trên máy. Lần đầu mở, hoặc sau khi thêm script có `class_name` mới, nên chạy `godot --headless --path . --import` để Godot cập nhật cache class.
 
 ### Điều khiển
 
@@ -58,6 +58,14 @@ Trạng thái chuồng chưa được lưu khi thoát game.
 Nhà hàng xóm chỉ nhìn từ ngoài, không vào được. Mỗi nhà có một người đi lại trong sân trước. Đứng gần và bấm E để **nói chuyện**: hộp thoại hiện ở dưới màn hình với câu của người hàng xóm và các câu trả lời đánh số. Chọn bằng phím số 1–4, bấm chuột, hoặc mũi tên lên/xuống rồi E / Enter; bấm **Esc** để thôi nói chuyện bất cứ lúc nào. Mỗi câu trả lời dẫn sang nhánh chuyện khác (hỏi thăm, mẹo làm vườn, chuyện gà, nồi chè, xin hoa...); chọn câu chào về thì kết thúc. Trong lúc nói chuyện bạn và người hàng xóm đều đứng yên.
 
 Kịch bản viết sẵn trong `scripts/dialogues.gd`, không dùng AI. Muốn sửa lời hoặc thêm nhánh: mỗi nút có `text` (câu người hàng xóm nói) và `options` (tối đa 4 cặp [câu trả lời, tên nút tiếp theo]); tên nút tiếp theo là `END` thì kết thúc. Nút sai tên sẽ báo lỗi ở Output khi chạy game từ editor.
+
+### Lưu game
+
+- **Đăng nhập**: mở game (đã có `supabase.cfg`) sẽ hiện màn đăng nhập. Lần đầu bấm **Đăng ký** bằng email + mật khẩu (ít nhất 6 ký tự); lần sau game nhớ và tự vào. Ở máy khác (công ty / nhà) đăng nhập cùng tài khoản là chơi tiếp đúng chỗ cũ.
+- **Lưu**: bấm nút đóng cửa sổ → game dừng và hỏi **Lưu và thoát / Thoát không lưu / Huỷ**. Không có tự lưu.
+- **Lưu gì**: cây trong vườn (lớn tới đâu, còn ẩm, còn phân), con vật (đói / đang làm / có sản phẩm) và số rau, hoa, trứng, sữa, len. Vị trí nhân vật, cửa, đèn không lưu. Thời gian trong game dừng khi tắt.
+- **Mất mạng**: game luôn lưu một bản trên máy trước. Gửi lên server lỗi thì báo và cho thử lại; lần sau mở game có mạng sẽ tự gửi. Mở game lúc mất mạng thì có nút **Chơi offline** dùng bản trên máy.
+- **Chơi ở 2 máy**: luôn bấm **Lưu và thoát** ở máy này trước khi mở máy kia. Chưa xử lý xung đột: bản nào gửi lên server sau cùng thì thắng — kể cả bản "chờ gửi" cũ của máy từng mất mạng, nó sẽ đè lên tiến độ mới hơn của máy kia khi có mạng lại.
 
 ### Nhìn trong nhà
 

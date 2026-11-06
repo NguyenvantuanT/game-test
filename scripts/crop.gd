@@ -147,6 +147,17 @@ func fertilize() -> void:
 	_refresh()
 
 
+func save_state() -> Dictionary:
+	return {"progress": progress, "water": water_left, "fertilizer": fertilizer_left}
+
+
+func load_state(data: Dictionary) -> void:
+	progress = clampf(SaveGame.number(data, "progress"), 0.0, 1.0)
+	water_left = clampf(SaveGame.number(data, "water"), 0.0, WATER_TIME)
+	fertilizer_left = clampf(SaveGame.number(data, "fertilizer"), 0.0, FERTILIZER_TIME)
+	_refresh()
+
+
 func harvest() -> void:
 	if not is_ripe():
 		return
