@@ -5,5 +5,5 @@ Nợ kỹ thuật + xung đột rule ↔ code đã biết. Agent đọc file nà
 | ID | Ở đâu | Vấn đề | Hướng xử lý | Trạng thái |
 |---|---|---|---|---|
 | TD-1 | máy dev | Chưa cài gdtoolkit → hook bỏ qua `gdlint`/`gdformat`. Agent đang chạy tạm bằng venv trong scratchpad, CI vẫn chạy đủ | `pip install gdtoolkit` | open |
-| TD-3 | `scripts/crop.gd`, `scripts/house.gd`… | Chưa có test trong repo: logic lớn của cây (`Crop.advance`), cutaway, cầu thang chỉ được kiểm bằng smoke test ở scratchpad của agent → người khác / CI không chạy lại được | Cài GUT vào `addons/gut`, chuyển smoke test thành `test/` (bắt đầu với `Crop.advance`: khô không lớn, phân x2, hết nước giữa chừng, chín dừng ở 1.0) | open |
+| TD-3 | `scripts/crop.gd`, `scripts/animal.gd`, `scripts/house.gd`… | Chưa có test trong repo: logic lớn của cây (`Crop.advance`), con vật (`Animal.advance`, đi lang thang), cutaway, cầu thang chỉ được kiểm bằng smoke test ở scratchpad của agent → người khác / CI không chạy lại được | Cài GUT vào `addons/gut`, chuyển smoke test thành `test/` (bắt đầu với `Crop.advance`: khô không lớn, phân x2, hết nước giữa chừng, chín dừng ở 1.0) | open |
 | TD-2 | `project.godot` | Khai feature 4.5 nhưng editor đang dùng 4.7.2 | Mở bằng editor 4.7 để nâng config, hoặc cài lại 4.5 — chờ quyết định | open |

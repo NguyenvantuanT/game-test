@@ -1,24 +1,20 @@
 @tool
 class_name Garden
 extends NamedArea
-## Một khu vườn 3D: luống đất, hàng rào có cổng phía -X, các hàng cây (`Crop`), biển tên.
+## Một khu vườn 3D: luống đất, `Fence` có cổng phía -X, các hàng cây (`Crop`), biển tên.
 ## Gốc toạ độ = tâm luống trên mặt đất. Hình và collision sinh trong code theo export.
 ## Cây bắt đầu ở giai đoạn ngẫu nhiên (seed theo tên vườn → lần chạy nào cũng giống nhau).
 
-signal crop_harvested(kind: PlantKind)
-
 enum PlantKind { VEGETABLE, FLOWER }
+
+## Tên vật phẩm theo PlantKind (World đếm lên HUD).
+const ITEM_NAMES: Array[String] = ["Rau", "Hoa"]
 
 const SOIL_HEIGHT: float = 0.12
 const FENCE_HEIGHT: float = 0.7
-const FENCE_THICKNESS: float = 0.08
-const POST_SIZE: float = 0.14
-const GATE_WIDTH: float = 1.6
 const PLANT_SPACING: float = 0.9
 const EDGE_MARGIN: float = 0.6
 const TRIGGER_HEIGHT: float = 2.0
-const FENCE_COLOR: Color = Color(0.55, 0.38, 0.2)
-const WORLD_LAYER: int = 1
 
 @export var size: Vector2 = Vector2(8.0, 5.5):
 	set(value):
@@ -76,47 +72,9 @@ func _rebuild() -> void:
 		Vector3(0.0, SOIL_HEIGHT / 2.0, 0.0),
 		soil_color
 	)
-	_build_fence()
+	Fence.build(_generated, size, Vector3.LEFT, FENCE_HEIGHT)
 	_build_plants()
 	_build_sign()
-
-
-## Rào 4 cạnh, cạnh -X chừa cổng ở giữa. Có collision (layer world) để chỉ vào được qua cổng.
-func _build_fence() -> void:
-	var body := StaticBody3D.new()
-	body.collision_layer = WORLD_LAYER
-	body.collision_mask = 0
-	_generated.add_child(body)
-	var half := size / 2.0
-	var side_len := (size.y - GATE_WIDTH) / 2.0
-	var segments: Array[AABB] = [
-		AABB(Vector3(-half.x, 0.0, -half.y), Vector3(size.x, 0.0, 0.0)),  # sau
-		AABB(Vector3(-half.x, 0.0, half.y), Vector3(size.x, 0.0, 0.0)),  # trước
-		AABB(Vector3(half.x, 0.0, -half.y), Vector3(0.0, 0.0, size.y)),  # phải
-		AABB(Vector3(-half.x, 0.0, -half.y), Vector3(0.0, 0.0, side_len)),  # trái, trên cổng
-		AABB(Vector3(-half.x, 0.0, GATE_WIDTH / 2.0), Vector3(0.0, 0.0, side_len)),  # trái, dưới
-	]
-	for segment: AABB in segments:
-		var extent := Vector3(
-			maxf(segment.size.x, FENCE_THICKNESS),
-			FENCE_HEIGHT,
-			maxf(segment.size.z, FENCE_THICKNESS)
-		)
-		var center := segment.position + segment.size / 2.0 + Vector3(0.0, FENCE_HEIGHT / 2.0, 0.0)
-		MeshKit.box(
-			_generated,
-			Vector3(extent.x, FENCE_HEIGHT * 0.35, extent.z),
-			center + Vector3(0.0, FENCE_HEIGHT * 0.15, 0.0),
-			FENCE_COLOR
-		)
-		MeshKit.collider(body, extent, center)
-		for end: Vector3 in [segment.position, segment.position + segment.size]:
-			MeshKit.box(
-				_generated,
-				Vector3(POST_SIZE, FENCE_HEIGHT, POST_SIZE),
-				end + Vector3(0.0, FENCE_HEIGHT / 2.0, 0.0),
-				FENCE_COLOR
-			)
 
 
 ## Các cây đang có (bản sao — smoke test dùng để duyệt từng cây).
@@ -146,7 +104,7 @@ func _build_plants() -> void:
 
 
 func _on_crop_harvested() -> void:
-	crop_harvested.emit(plant_kind)
+	collected.emit(ITEM_NAMES[plant_kind])
 
 
 func _build_sign() -> void:
