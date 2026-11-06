@@ -1,10 +1,12 @@
 extends Node3D
-## Scene chính 3D: bãi cỏ, ngôi nhà (vào được), 2 khu vườn, 3 chuồng nuôi, nhân vật và HUD.
+## Scene chính 3D: bãi cỏ, ngôi nhà (vào được), 2 khu vườn, 3 chuồng nuôi, 2 nhà hàng xóm,
+## nhân vật và HUD.
 ## Map nằm trên mặt XZ từ (0, 0) tới MAP_SIZE (mét).
 ## HUD: tên khu vực = NamedArea (phòng, vườn) vào gần nhất; gợi ý `[E] ...` từ Player;
-## góc phải đếm vật phẩm thu được (NamedArea.collected từ vườn, chuồng).
+## góc phải đếm vật phẩm thu được (NamedArea.collected từ vườn, chuồng); hộp hội thoại khi nói
+## chuyện với hàng xóm (Player đứng yên tới khi đóng).
 
-const MAP_SIZE: Vector2 = Vector2(40.0, 25.0)
+const MAP_SIZE: Vector2 = Vector2(56.0, 25.0)
 const OUTSIDE_TEXT: String = "Sân nhà"
 
 ## Các vùng Player đang đứng trong, theo thứ tự vào (vùng chồng nhau ở ngưỡng cửa).
@@ -17,6 +19,7 @@ var _counts: Dictionary[String, int] = {}
 @onready var _area_label: Label = %AreaLabel
 @onready var _prompt_label: Label = %Prompt
 @onready var _count_label: Label = %CountLabel
+@onready var _dialogue: DialogueBox = %DialogueBox
 
 
 func _ready() -> void:
@@ -26,6 +29,12 @@ func _ready() -> void:
 		area.player_entered.connect(_on_area_entered)
 		area.player_exited.connect(_on_area_exited)
 		area.collected.connect(_on_collected)
+		if area is NeighborHome:
+			(area as NeighborHome).talk_requested.connect(_on_talk_requested)
+	_dialogue.closed.connect(_set_player_active.bind(true))
+	if OS.is_debug_build():
+		for problem: String in Dialogues.problems():
+			push_error("Kịch bản hội thoại: " + problem)
 	_house.player_inside_changed.connect(_player.set_camera_close)
 	_player.focus_changed.connect(_on_focus_changed)
 	_refresh_area_label()
@@ -93,3 +102,15 @@ static func _item_order() -> Array[String]:
 func _on_focus_changed(prompt: String) -> void:
 	_prompt_label.visible = not prompt.is_empty()
 	_prompt_label.text = "[E] " + prompt
+
+
+func _on_talk_requested(neighbor: Neighbor) -> void:
+	if _dialogue.open(neighbor):
+		_set_player_active(false)
+
+
+## Khoá / mở Player khi hội thoại mở / đóng; gợi ý `[E]` ẩn trong lúc nói chuyện.
+func _set_player_active(active: bool) -> void:
+	_player.set_physics_process(active)
+	_player.set_process_unhandled_input(active)
+	_prompt_label.visible = active and _prompt_label.text != "[E] "

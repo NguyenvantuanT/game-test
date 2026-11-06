@@ -41,6 +41,13 @@ static func cylinder(
 	return _add(parent, mesh, center, color)
 
 
+## Lăng trụ tam giác (mái nhà): tam giác trên mặt XY, đỉnh ở giữa cạnh trên, kéo dài theo Z.
+static func prism(parent: Node, size: Vector3, center: Vector3, color: Color) -> MeshInstance3D:
+	var mesh := PrismMesh.new()
+	mesh.size = size
+	return _add(parent, mesh, center, color)
+
+
 static func sphere(parent: Node, radius: float, center: Vector3, color: Color) -> MeshInstance3D:
 	var mesh := SphereMesh.new()
 	mesh.radius = radius

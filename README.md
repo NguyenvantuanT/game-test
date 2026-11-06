@@ -1,6 +1,6 @@
 # game-test
 
-Game 3D thử nghiệm làm bằng Godot 4. Bạn điều khiển một nhân vật đi dạo trong khu đất có ngôi nhà 2 tầng vào được hai khu vườn để chăm cây, thu hoạch, và ba chuồng nuôi gà, bò, cừu. Camera nhìn chéo từ trên xuống. Hình hiện tại chỉ là khối cơ bản, chưa có model thật.
+Game 3D thử nghiệm làm bằng Godot 4. Bạn điều khiển một nhân vật đi dạo trong khu đất có ngôi nhà 2 tầng vào được hai khu vườn để chăm cây, thu hoạch, ba chuồng nuôi gà, bò, cừu, và xóm có hai nhà hàng xóm. Camera nhìn chéo từ trên xuống. Hình hiện tại chỉ là khối cơ bản, chưa có model thật.
 
 Repo được phát triển chủ yếu bằng coding agent (Claude Code), chạy trong bộ harness `vtinter-harness`: luật, hook và subagent kiểm tra giúp agent làm đúng quy trình. Phần [Cách AI làm việc](#cách-ai-làm-việc-trong-repo) bên dưới mô tả quy trình đó.
 
@@ -21,7 +21,7 @@ Scene chính là `scenes/world.tscn`. Lần đầu mở, hoặc sau khi thêm sc
 | Phím | Việc |
 |---|---|
 | WASD / phím mũi tên | Di chuyển |
-| E | Tương tác với vật gần nhất: mở/đóng cửa, bật/tắt đèn và TV, thắp/tắt hương, tưới cây, bón phân, thu hoạch, cho ăn, nhặt trứng, vắt sữa, cắt lông |
+| E | Tương tác với vật gần nhất: mở/đóng cửa, bật/tắt đèn và TV, thắp/tắt hương, tưới cây, bón phân, thu hoạch, cho ăn, nhặt trứng, vắt sữa, cắt lông, nói chuyện với hàng xóm |
 
 Góc trên bên trái hiện tên khu vực đang đứng, góc trên bên phải đếm số rau, hoa, trứng, sữa, len đã thu được. Khi đứng gần vật tương tác được, gợi ý `[E] ...` hiện ở dưới màn hình.
 
@@ -30,6 +30,7 @@ Góc trên bên trái hiện tên khu vực đang đứng, góc trên bên phả
 - **Sân nhà**: lối đi nối nhà với vườn rau, vườn hoa và khu chăn nuôi phía nam nhà.
 - **Vườn rau, vườn hoa**: mỗi cây chăm riêng (xem [Làm vườn](#làm-vườn)).
 - **Chuồng gà, chuồng bò, chuồng cừu**: ba ô rào riêng, cổng quay về phía nhà (xem [Chăn nuôi](#chăn-nuôi)).
+- **Xóm**: đi theo đường chính sang phía đông, qua giữa hai vườn, tới nhà bác Ba và nhà cô Lan nằm cạnh nhau phía bắc đường. Xem [Hàng xóm](#hàng-xóm).
 - **Nhà, tầng 1**: phòng khách (sofa, TV, kệ sách, đèn cây), bếp và bàn ăn, phòng ngủ, phòng tắm. Cầu thang nằm trong phòng ngủ.
 - **Nhà, tầng 2**: phòng thờ phía trước, sảnh cầu thang ở giữa, hai phòng ngủ hai bên, nhà vệ sinh phía sau.
 
@@ -51,6 +52,12 @@ Gà (5 con), bò (2 con) và cừu (3 con) tự đi lang thang trong chuồng; c
 2. Khi xong, sản phẩm xoay trên đầu con vật: quả trứng, chai sữa hoặc cuộn len (lông cừu cũng dày dần lên). Bấm **Nhặt trứng**, **Vắt sữa** hoặc **Cắt lông** để thu; HUD cộng thêm 1 và con vật lại đói.
 
 Trạng thái chuồng chưa được lưu khi thoát game.
+
+### Hàng xóm
+
+Nhà hàng xóm chỉ nhìn từ ngoài, không vào được. Mỗi nhà có một người đi lại trong sân trước. Đứng gần và bấm E để **nói chuyện**: hộp thoại hiện ở dưới màn hình với câu của người hàng xóm và các câu trả lời đánh số. Chọn bằng phím số 1–4, bấm chuột, hoặc mũi tên lên/xuống rồi E / Enter; bấm **Esc** để thôi nói chuyện bất cứ lúc nào. Mỗi câu trả lời dẫn sang nhánh chuyện khác (hỏi thăm, mẹo làm vườn, chuyện gà, nồi chè, xin hoa...); chọn câu chào về thì kết thúc. Trong lúc nói chuyện bạn và người hàng xóm đều đứng yên.
+
+Kịch bản viết sẵn trong `scripts/dialogues.gd`, không dùng AI. Muốn sửa lời hoặc thêm nhánh: mỗi nút có `text` (câu người hàng xóm nói) và `options` (tối đa 4 cặp [câu trả lời, tên nút tiếp theo]); tên nút tiếp theo là `END` thì kết thúc. Nút sai tên sẽ báo lỗi ở Output khi chạy game từ editor.
 
 ### Nhìn trong nhà
 
