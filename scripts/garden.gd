@@ -103,6 +103,17 @@ func _build_plants() -> void:
 			_crops.append(crop)
 
 
+func save_state() -> Array:
+	return _crops.map(func(crop: Crop) -> Dictionary: return crop.save_state())
+
+
+## Nạp theo thứ tự cây; số cây lệch (đổi layout) thì nạp phần khớp.
+func load_state(data: Array) -> void:
+	for i in mini(data.size(), _crops.size()):
+		if data[i] is Dictionary:
+			_crops[i].load_state(data[i])
+
+
 func _on_crop_harvested() -> void:
 	collected.emit(ITEM_NAMES[plant_kind])
 

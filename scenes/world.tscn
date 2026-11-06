@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scripts/world.gd" id="1_world"]
 [ext_resource type="PackedScene" path="res://scenes/house.tscn" id="2_house"]
@@ -7,6 +7,8 @@
 [ext_resource type="PackedScene" path="res://scenes/pen.tscn" id="5_pen"]
 [ext_resource type="PackedScene" path="res://scenes/neighbor_home.tscn" id="6_neighbor_home"]
 [ext_resource type="Script" path="res://scripts/dialogue_box.gd" id="7_dialogue_box"]
+[ext_resource type="Script" path="res://scripts/login_screen.gd" id="8_login_screen"]
+[ext_resource type="Script" path="res://scripts/save_flow.gd" id="9_save_flow"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat"]
 sky_top_color = Color(0.38, 0.6, 0.88, 1)
@@ -233,3 +235,16 @@ offset_bottom = -24.0
 grow_horizontal = 2
 grow_vertical = 0
 script = ExtResource("7_dialogue_box")
+
+[node name="LoginScreen" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("8_login_screen")
+
+[node name="SaveFlow" type="Node" parent="." node_paths=PackedStringArray("login")]
+script = ExtResource("9_save_flow")
+login = NodePath("../HUD/LoginScreen")

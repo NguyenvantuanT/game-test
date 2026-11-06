@@ -78,6 +78,17 @@ func _rebuild() -> void:
 	_build_sign()
 
 
+func save_state() -> Array:
+	return _animals.map(func(animal: Animal) -> Dictionary: return animal.save_state())
+
+
+## Nạp theo thứ tự con vật; số con lệch (đổi layout) thì nạp phần khớp.
+func load_state(data: Array) -> void:
+	for i in mini(data.size(), _animals.size()):
+		if data[i] is Dictionary:
+			_animals[i].load_state(data[i])
+
+
 func _build_trough() -> void:
 	var body := StaticBody3D.new()
 	body.name = "Trough"
